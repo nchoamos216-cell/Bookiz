@@ -3,15 +3,15 @@ import { cookies } from "next/headers";
 
 export async function POST(request: Request) {
   try {
-    const { password } = await request.json();
-    const adminPassword = "0574263022Ga";
+    const body = await request.json();
+    const password = body.password;
 
-    if (password === adminPassword) {
-      // Définit un cookie de session pour autoriser l'accès
+    // Ton mot de passe exact
+    if (password === "0574263022Ga") {
       cookies().set("admin_session", "true", {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
-        maxAge: 60 * 60 * 24, // 1 jour
+        maxAge: 60 * 60 * 24,
         path: "/",
       });
 

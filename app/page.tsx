@@ -397,4 +397,13 @@ export default async function Home({
                       </td>
                     </tr>
                   ))}
-                </tbody> 
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+
+      </div>
+    </main>
+  )
+}

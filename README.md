@@ -1,36 +1,25 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🚀 Bookiz - SaaS de Gestion et Réservation pour Commerces
 
-## Getting Started
+**Bookiz** est une plateforme SaaS complète conçue pour digitaliser les commerces locaux (salons, instituts, services). Il permet de gérer les réservations, les plannings, les clients (CRM) et les paiements en ligne.
 
-First, run the development server:
+## 🛠️ Stack Technique
+- **Framework :** Next.js 16 (App Router)
+- **Base de données :** PostgreSQL (via Prisma ORM)
+- **Paiements :** Stripe API
+- **Notifications :** Resend (Emails transactionnels)
+- **Styling :** Tailwind CSS
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## ✨ Fonctionnalités Clés
+- **Multi-Salons & Multi-Employés :** Architecture robuste pour gérer plusieurs établissements.
+- **Réservation Intelligente :** Parcours client fluide avec sélection de prestataire.
+- **CRM Intégré :** Suivi de l'historique des rendez-vous clients.
+- **Paiements & Facturation :** Intégration Stripe pour sécuriser les revenus.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 💡 Défis Techniques
+Ce projet m'a permis de maîtriser :
+1. L'architecture multi-tenant (isolation des données par business).
+2. La synchronisation en temps réel entre le calendrier, le CRM et les emails.
+3. La gestion sécurisée des paiements en ligne pour des services de proximité.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+*Projet réalisé pour la digitalisation des commerces en Côte d'Ivoire.*

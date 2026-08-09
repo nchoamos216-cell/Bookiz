@@ -4,18 +4,21 @@ import { cookies } from "next/headers";
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const password = body.password;
+    const { password } = body;
 
-    // Ton mot de passe exact
+    // Vérification stricte du mot de passe admin
     if (password === "0574263022Ga") {
-      cookies().set("admin_session", "true", {
+      const cookieStore = cookies();
+      cookieStore.set({
+        name: "admin_session",
+        value: "true",
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
-        maxAge: 60 * 60 * 24,
+        maxAge: 60 * 60 * 24, // 1 jour
         path: "/",
       });
 
-      return NextResponse.json({ success: true });
+      return NextResponse.json({ success: true }, { status: 200 });
     }
 
     return NextResponse.json({ error: "Mot de passe incorrect" }, { status: 401 });

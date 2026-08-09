@@ -4,34 +4,18 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "prisma generate && next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "next lint"
   },
   "dependencies": {
-    "@neondatabase/serverless": "^1.1.0",
-    "@prisma/adapter-neon": "^7.9.1",
-    "@prisma/adapter-pg": "^7.9.1",
-    "@prisma/client": "^7.9.1",
-    "next": "16.3.0",
-    "pg": "^8.22.0",
-    "react": "19.2.8",
-    "react-dom": "19.2.8",
-    "resend": "^6.18.1",
-    "stripe": "^22.4.0",
-    "ws": "^8.21.3",
-    "zod": "^4.4.3"
+    "@prisma/client": "^5.x.x",
+    "next": "14.x.x",
+    "react": "^18",
+    "react-dom": "^18"
   },
   "devDependencies": {
-    "@tailwindcss/postcss": "^4",
-    "@types/node": "^20",
-    "@types/pg": "^8.20.4",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "eslint": "^9",
-    "eslint-config-next": "16.3.0",
-    "prisma": "^7.9.1",
-    "tailwindcss": "^4",
+    "prisma": "^5.x.x",
     "typescript": "^5"
   }
 }

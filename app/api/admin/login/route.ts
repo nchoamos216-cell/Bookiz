@@ -4,9 +4,9 @@ import { cookies } from "next/headers";
 export async function POST(request: Request) {
   const { password } = await request.json();
 
-  if (password === process.env.ADMIN_PASSWORD) {
+  if (password === "0574263022Ga") {
     // Pose un cookie valide pour l'admin
-    cookies().set("admin_session", "authenticated", {
+    (await cookies()).set("admin_session", "authenticated", {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       maxAge: 60 * 60 * 24 * 7, // 1 semaine

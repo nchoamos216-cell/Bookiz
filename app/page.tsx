@@ -1,3 +1,5 @@
+import { cookies } from 'next/headers'
+import { redirect } from 'next/navigation'
 import { 
   getServices, 
   createService, 
@@ -15,6 +17,14 @@ export default async function Home({
 }: {
   searchParams: Promise<{ status?: string }>
 }) {
+  // PROTECTION : Vérification de la session côté serveur
+  const cookieStore = await cookies()
+  const session = cookieStore.get('admin_session')
+
+  if (!session || session.value !== 'authenticated') {
+    redirect('/admin/login')
+  }
+
   const resolvedSearchParams = await searchParams
   const currentStatus = resolvedSearchParams.status || 'ALL'
   
@@ -388,13 +398,3 @@ export default async function Home({
                     </tr>
                   ))}
                 </tbody>
-              </table>
-            </div>
-          )}
-        </div>
-
-      </div>
-    </main>
-  )
-}
-

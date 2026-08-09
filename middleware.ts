@@ -4,11 +4,18 @@ import type { NextRequest } from "next/server";
 export function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname;
 
-  // Si on essaie d'aller sur l'admin (sauf la page de login)
-  if (path.startsWith("/admin") && path !== "/admin/login") {
+  // Autoriser explicitement la page de login et l'API de login
+  if (path === "/admin/login" || path === "/api/admin/login") {
+    return NextResponse.next();
+  }
+
+  // Si l'URL commence par /admin, on vérifie le cookie de session
+  if (path.startsWith("/admin")) {
     const session = request.cookies.get("admin_session");
+    
     if (!session || session.value !== "authenticated") {
-      return NextResponse.redirect(new URL("/admin/login", request.url));
+      const loginUrl = new URL("/admin/login", request.url);
+      return NextResponse.redirect(loginUrl);
     }
   }
 
@@ -16,5 +23,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: "/admin/:path*",
+  matcher: ["/admin/:path*", "/admin"],
 };

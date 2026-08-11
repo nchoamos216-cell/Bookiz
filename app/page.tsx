@@ -8,7 +8,6 @@ export default async function PublicHomePage() {
     <main className="min-h-screen bg-slate-950 text-slate-50 p-6 md:p-16">
       <div className="max-w-4xl mx-auto space-y-12">
         
-        {/* En-tête du site */}
         <div className="flex justify-between items-center bg-slate-900 border border-slate-800 px-6 py-4 rounded-xl shadow-lg">
           <div>
             <h1 className="text-xl font-bold bg-gradient-to-r from-blue-400 to-indigo-500 bg-clip-text text-transparent">
@@ -18,7 +17,6 @@ export default async function PublicHomePage() {
           </div>
         </div>
 
-        {/* Section de présentation */}
         <div className="text-center space-y-4 py-8">
           <h2 className="text-3xl md:text-5xl font-extrabold tracking-tight">
             Nos Prestations Disponibles
@@ -28,7 +26,6 @@ export default async function PublicHomePage() {
           </p>
         </div>
 
-        {/* Liste des services pour les clients */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {services.map((service) => (
             <div key={service.id} className="bg-slate-900 border border-slate-800 p-6 rounded-2xl shadow-xl flex flex-col justify-between space-y-6">
@@ -54,7 +51,6 @@ export default async function PublicHomePage() {
             </div>
           ))}
         </div>
-
       </div>
     </main>
   )

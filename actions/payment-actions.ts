@@ -36,18 +36,16 @@ export async function createCheckoutSession(formData: FormData) {
       return { success: false, message: 'Service introuvable.' }
     }
 
-       // 2. Récupérer ou créer l'entreprise (business) par défaut
+    // 2. Récupérer ou créer l'entreprise (business) par défaut
     let business = await db.business.findFirst()
 
     if (!business) {
       business = await db.business.create({
         data: {
           name: 'Mon Entreprise par défaut',
-          // Ajoute d'autres champs obligatoires si ton schéma Prisma en exige d'autres
         },
       })
     }
-
 
     // 3. Trouver ou créer le client (CRM)
     let client = await db.client.findUnique({
@@ -71,13 +69,19 @@ export async function createCheckoutSession(formData: FormData) {
         clientEmail,
         date: new Date(date),
         clientId: client.id,
-        businessId: business.id, // <--- Ajouté ici pour corriger l'erreur Prisma
+        businessId: business.id,
         status: 'PENDING',
         isPaid: false,
       },
     })
 
-    // 5. Créer la session de paiement Stripe Checkout
+    // 5. Sécuriser le montant pour Stripe (convertit en centimes et vérifie la validité)
+    const unitAmount = Math.round(Number(service.price) * 100)
+    if (isNaN(unitAmount) || unitAmount <= 0) {
+      return { success: false, message: 'Le prix du service est invalide.' }
+    }
+
+    // 6. Créer la session de paiement Stripe Checkout
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       line_items: [
@@ -85,10 +89,10 @@ export async function createCheckoutSession(formData: FormData) {
           price_data: {
             currency: 'eur',
             product_data: {
-              name: service.title,
+              name: service.title || 'Prestation Bookiz',
               description: service.description || undefined,
             },
-            unit_amount: Math.round(service.price * 100), // Stripe attend les centimes
+            unit_amount: unitAmount,
           },
           quantity: 1,
         },
@@ -106,7 +110,7 @@ export async function createCheckoutSession(formData: FormData) {
       return { success: false, message: 'Erreur lors de la création de la session de paiement.' }
     }
 
-    // 6. Redirection vers la page de paiement sécurisée Stripe
+    // 7. Redirection vers la page de paiement sécurisée Stripe
     redirect(session.url)
 
   } catch (error: any) {

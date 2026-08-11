@@ -113,12 +113,13 @@ export async function createCheckoutSession(formData: FormData) {
     // 7. Redirection vers la page de paiement sécurisée Stripe
     redirect(session.url)
 
-  } catch (error: any) {
-    // Next.js redirect lance une erreur spéciale qu'il faut laisser passer
+    } catch (error: any) {
     if (error?.message === 'NEXT_REDIRECT') {
       throw error
     }
-    console.error('Erreur Stripe Checkout :', error)
+    // Affiche l'erreur détaillée de Stripe dans les logs Render
+    console.error('Erreur Stripe détaillée :', error?.raw || error.message || error)
     return { success: false, message: 'Impossible d\'initier le paiement.' }
   }
+
 }

@@ -36,7 +36,14 @@ export async function createCheckoutSession(formData: FormData) {
       return { success: false, message: 'Service introuvable.' }
     }
 
-    // 2. Trouver ou créer le client (CRM)
+    // 2. Récupérer l'entreprise (business) pour lier la réservation
+    const business = await db.business.findFirst()
+
+    if (!business) {
+      return { success: false, message: 'Aucune entreprise configurée dans la base.' }
+    }
+
+    // 3. Trouver ou créer le client (CRM)
     let client = await db.client.findUnique({
       where: { email: clientEmail },
     })
@@ -50,7 +57,7 @@ export async function createCheckoutSession(formData: FormData) {
       })
     }
 
-    // 3. Créer la réservation en statut PENDING et isPaid à false
+    // 4. Créer la réservation en statut PENDING et isPaid à false avec le businessId
     const newBooking = await db.booking.create({
       data: {
         serviceId,
@@ -58,21 +65,22 @@ export async function createCheckoutSession(formData: FormData) {
         clientEmail,
         date: new Date(date),
         clientId: client.id,
+        businessId: business.id, // <--- Ajouté ici pour corriger l'erreur Prisma
         status: 'PENDING',
         isPaid: false,
       },
     })
 
-    // 4. Créer la session de paiement Stripe Checkout
+    // 5. Créer la session de paiement Stripe Checkout
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       line_items: [
         {
           price_data: {
-            currency: 'eur', // Tu peux adapter la devise si besoin
+            currency: 'eur',
             product_data: {
               name: service.title,
-              description: service.description,
+              description: service.description || undefined,
             },
             unit_amount: Math.round(service.price * 100), // Stripe attend les centimes
           },
@@ -92,7 +100,7 @@ export async function createCheckoutSession(formData: FormData) {
       return { success: false, message: 'Erreur lors de la création de la session de paiement.' }
     }
 
-    // 5. Redirection vers la page de paiement sécurisée Stripe
+    // 6. Redirection vers la page de paiement sécurisée Stripe
     redirect(session.url)
 
   } catch (error: any) {

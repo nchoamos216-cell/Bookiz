@@ -1,17 +1,8 @@
 import { PrismaClient } from "@prisma/client";
 
-// Évite d'ouvrir plusieurs instances de Prisma en mode développement/production
 const globalForPrisma = global as unknown as { prisma: PrismaClient };
 
-const prisma =
-  globalForPrisma.prisma ||
-  new PrismaClient({
-    datasources: {
-      db: {
-        url: process.env.DATABASE_URL,
-      },
-    },
-  });
+const prisma = globalForPrisma.prisma || new PrismaClient();
 
 if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
 

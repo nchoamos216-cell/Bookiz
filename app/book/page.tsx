@@ -107,23 +107,20 @@ export default function BookingPage() {
                   </option>
                 ))}
               </select>
+
             </div>
 
-            {/* Sélection de l'employé */}
-            <div>
-              <label className="block text-sm font-medium text-slate-400 mb-1">Sélectionner un prestataire (Optionnel)</label>
-              <select 
-                name="employeeId" 
-                className="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-2 text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500"
-              >
-                <option value="">-- Sans préférence / Premier disponible --</option>
+                {/* Sélection de l'employé masquée mais transmise automatiquement */}
+                <div className="hidden">
+                <select name="employeeId" defaultValue={employees[0]?.id || ""}>
                 {employees.map((employee) => (
-                  <option key={employee.id} value={employee.id}>
-                    {employee.name} {employee.role ? `(${employee.role})` : ''}
-                  </option>
-                ))}
-              </select>
+                <option key={employee.id} value={employee.id}>
+                 {employee.name}
+                 </option>
+                 ))}
+             </select>
             </div>
+
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>

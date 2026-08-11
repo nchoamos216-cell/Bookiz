@@ -8,7 +8,7 @@ export default async function PublicHomePage() {
     <main className="min-h-screen bg-slate-950 text-slate-50 p-6 md:p-16">
       <div className="max-w-4xl mx-auto space-y-12">
         
-        {/* En-tête du site (Sans le bouton admin pour les clients) */}
+        {/* En-tête du site */}
         <div className="flex justify-between items-center bg-slate-900 border border-slate-800 px-6 py-4 rounded-xl shadow-lg">
           <div>
             <h1 className="text-xl font-bold bg-gradient-to-r from-blue-400 to-indigo-500 bg-clip-text text-transparent">

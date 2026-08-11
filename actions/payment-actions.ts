@@ -75,8 +75,8 @@ export async function createCheckoutSession(formData: FormData) {
       return { success: false, message: 'Le prix du service est invalide.' }
     }
 
-    // Récupération sécurisée de l'URL de base avec repli vers le domaine de production
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://bookiz.onrender.com'
+    // URL codée en dur pour garantir un format valide à 100%
+    const baseUrl = 'https://bookiz.onrender.com'
 
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],

@@ -1,23 +1,47 @@
 import { PrismaClient } from "@prisma/client";
 
-// Initialisation de Prisma pour récupérer les données
-const prisma = new PrismaClient();
+// Évite d'ouvrir plusieurs instances de Prisma en mode développement/production
+const globalForPrisma = global as unknown as { prisma: PrismaClient };
 
-export default async function AdminDashboard() {
-  // Récupération des réservations avec leurs services associés
-  const bookings = await prisma.booking.findMany({
-    include: {
-      service: true,
-    },
-    orderBy: {
-      createdAt: "desc",
+const prisma =
+  globalForPrisma.prisma ||
+  new PrismaClient({
+    datasources: {
+      db: {
+        url: process.env.DATABASE_URL,
+      },
     },
   });
+
+if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
+
+export default async function AdminDashboard() {
+  let bookings: any[] = [];
+  let errorMsg = null;
+
+  try {
+    bookings = await prisma.booking.findMany({
+      include: {
+        service: true,
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+  } catch (err: any) {
+    errorMsg = err.message;
+  }
 
   return (
     <div style={{ padding: "40px", fontFamily: "sans-serif", maxWidth: "1000px", margin: "0 auto" }}>
       <h1>Bookiz - Administration</h1>
       <p style={{ color: "#666", marginBottom: "30px" }}>Bienvenue sur le tableau de bord administrateur !</p>
+
+      {errorMsg && (
+        <div style={{ padding: "15px", backgroundColor: "#fce8e6", color: "#c5221f", borderRadius: "5px", marginBottom: "20px" }}>
+          <strong>Erreur de base de données :</strong> {errorMsg}
+        </div>
+      )}
 
       <h2>Liste des Réservations ({bookings.length})</h2>
 

@@ -8,7 +8,7 @@ export default async function PublicHomePage() {
     <main className="min-h-screen bg-slate-950 text-slate-50 p-6 md:p-16">
       <div className="max-w-4xl mx-auto space-y-12">
         
-        {/* En-tête du site */}
+        {/* En-tête du site (Sans le bouton admin pour les clients) */}
         <div className="flex justify-between items-center bg-slate-900 border border-slate-800 px-6 py-4 rounded-xl shadow-lg">
           <div>
             <h1 className="text-xl font-bold bg-gradient-to-r from-blue-400 to-indigo-500 bg-clip-text text-transparent">
@@ -16,12 +16,6 @@ export default async function PublicHomePage() {
             </h1>
             <p className="text-xs text-slate-400">Réservez votre prestation en quelques clics</p>
           </div>
-          <Link 
-            href="/admin" 
-            className="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-2 rounded-lg transition-colors border border-slate-700 font-medium"
-          >
-            🔒 Espace Admin
-          </Link>
         </div>
 
         {/* Section de présentation */}
@@ -54,7 +48,7 @@ export default async function PublicHomePage() {
                   href={`/book?serviceId=${service.id}`}
                   className="bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium px-5 py-2.5 rounded-xl transition-colors shadow-lg shadow-blue-600/20"
                 >
-                  Réservez →
+                  Réserver →
                 </Link>
               </div>
             </div>

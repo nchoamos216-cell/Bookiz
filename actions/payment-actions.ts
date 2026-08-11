@@ -36,12 +36,18 @@ export async function createCheckoutSession(formData: FormData) {
       return { success: false, message: 'Service introuvable.' }
     }
 
-    // 2. Récupérer l'entreprise (business) pour lier la réservation
-    const business = await db.business.findFirst()
+       // 2. Récupérer ou créer l'entreprise (business) par défaut
+    let business = await db.business.findFirst()
 
     if (!business) {
-      return { success: false, message: 'Aucune entreprise configurée dans la base.' }
+      business = await db.business.create({
+        data: {
+          name: 'Mon Entreprise par défaut',
+          // Ajoute d'autres champs obligatoires si ton schéma Prisma en exige d'autres
+        },
+      })
     }
+
 
     // 3. Trouver ou créer le client (CRM)
     let client = await db.client.findUnique({

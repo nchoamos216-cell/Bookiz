@@ -6,7 +6,7 @@ export default async function LoginPage() {
     'use server'
     const password = formData.get('password')
     // Remplace "TON_MOT_DE_PASSE" par le mot de passe de ton choix
-    if (password === 'monmotdepasse123') {
+    if (password === '0711644857Ga') {
       (await cookies()).set('admin_session', 'authenticated', { httpOnly: true })
       redirect('/admin')
     }

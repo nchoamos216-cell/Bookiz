@@ -5,10 +5,14 @@ import { revalidatePath } from 'next/cache'
 import { bookingSchema } from '@/lib/schemas'
 import { sendBookingConfirmation } from '@/lib/mail'
 
-// Récupérer les services pour la page publique
+// ID de ton salon par défaut (créé via le seed)
+const DEFAULT_BUSINESS_ID = '6c9169b7-4b0b-4906-85a9-3ba4e960d640'
+
+// Récupérer les services pour la page publique du salon
 export async function getPublicServices() {
   try {
     return await db.service.findMany({
+      where: { businessId: DEFAULT_BUSINESS_ID },
       orderBy: { createdAt: 'desc' },
     })
   } catch (error) {
@@ -17,13 +21,27 @@ export async function getPublicServices() {
   }
 }
 
-// Récupérer la liste des clients pour le CRM
+// Récupérer la liste des employés pour la sélection lors de la réservation
+export async function getEmployees() {
+  try {
+    return await db.employee.findMany({
+      where: { businessId: DEFAULT_BUSINESS_ID },
+      orderBy: { name: 'asc' },
+    })
+  } catch (error) {
+    console.error('Erreur lors de la récupération des employés :', error)
+    return []
+  }
+}
+
+// Récupérer la liste des clients pour le CRM du salon
 export async function getClients() {
   try {
     return await db.client.findMany({
       include: {
         bookings: {
-          include: { service: true },
+          where: { businessId: DEFAULT_BUSINESS_ID },
+          include: { service: true, employee: true },
           orderBy: { date: 'desc' },
         },
       },
@@ -35,7 +53,7 @@ export async function getClients() {
   }
 }
 
-// Créer une réservation (avec gestion automatique du client CRM)
+// Créer une réservation (avec gestion automatique du client CRM, du salon et de l'employé)
 export async function createBooking(formData: FormData) {
   const rawData = {
     serviceId: formData.get('serviceId') as string,
@@ -43,6 +61,8 @@ export async function createBooking(formData: FormData) {
     clientEmail: formData.get('clientEmail') as string,
     date: formData.get('date') as string,
   }
+
+  const employeeId = formData.get('employeeId') as string
 
   // Validation rigoureuse avec Zod
   const validatedFields = bookingSchema.safeParse(rawData)
@@ -78,7 +98,7 @@ export async function createBooking(formData: FormData) {
       })
     }
 
-    // 2. Créer la réservation liée au client et récupérer le service associé
+    // 2. Créer la réservation liée au salon, au client, au service et à l'employé
     const newBooking = await db.booking.create({
       data: {
         serviceId,
@@ -86,9 +106,12 @@ export async function createBooking(formData: FormData) {
         clientEmail,
         date: new Date(date),
         clientId: client.id,
+        businessId: DEFAULT_BUSINESS_ID,
+        employeeId: employeeId || null,
       },
       include: {
         service: true, // Nécessaire pour obtenir le titre du service pour l'e-mail
+        employee: true,
       },
     })
 
@@ -105,6 +128,6 @@ export async function createBooking(formData: FormData) {
     return { success: true, message: 'Votre réservation a été confirmée avec succès !' }
   } catch (error) {
     console.error('Erreur lors de la réservation :', error)
-    return { success: false, message: 'Impossible d\'enregistrer la réservation.' }
+    return { success: false, message: "Impossible d'enregistrer la réservation." }
   }
 }

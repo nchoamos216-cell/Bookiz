@@ -54,7 +54,7 @@ export default async function Home({
             Bookiz - Administration des Services
           </h1>
           <p className="text-slate-400">
-            Phase 3 : SaaS Tout-en-Un - Gestion du catalogue, CRM, Paiements Stripe et Facturation.
+             SaaS Tout-en-Un - Gestion du catalogue, CRM, Paiements Stripe et Facturation.
           </p>
         </div>
 

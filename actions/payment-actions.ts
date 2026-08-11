@@ -75,6 +75,9 @@ export async function createCheckoutSession(formData: FormData) {
       return { success: false, message: 'Le prix du service est invalide.' }
     }
 
+    // Récupération sécurisée de l'URL de base avec repli vers le domaine de production
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://bookiz.onrender.com'
+
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       line_items: [
@@ -92,8 +95,8 @@ export async function createCheckoutSession(formData: FormData) {
       ],
       mode: 'payment',
       customer_email: clientEmail,
-      success_url: `${process.env.NEXT_PUBLIC_APP_URL}/book/success?booking_id=${newBooking.id}`,
-      cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/book?canceled=true`,
+      success_url: `${baseUrl}/book/success?booking_id=${newBooking.id}`,
+      cancel_url: `${baseUrl}/book?canceled=true`,
       metadata: {
         bookingId: newBooking.id,
       },
@@ -109,7 +112,6 @@ export async function createCheckoutSession(formData: FormData) {
     if (error?.message === 'NEXT_REDIRECT') {
       throw error
     }
-    // Affichage explicite du message d'erreur Stripe dans les logs
     console.error('--- ERREUR STRIPE EXPLICITE ---')
     console.error('Message :', error?.raw?.message || error?.message)
     console.error('Type :', error?.raw?.type)

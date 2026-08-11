@@ -13,7 +13,6 @@ export async function createCheckoutSession(formData: FormData) {
     date: formData.get('date') as string,
   }
 
-  // Validation rigoureuse avec Zod
   const validatedFields = bookingSchema.safeParse(rawData)
 
   if (!validatedFields.success) {
@@ -27,7 +26,6 @@ export async function createCheckoutSession(formData: FormData) {
   const { serviceId, clientName, clientEmail, date } = validatedFields.data
 
   try {
-    // 1. Récupérer le service pour obtenir son prix et son titre
     const service = await db.service.findUnique({
       where: { id: serviceId },
     })
@@ -36,7 +34,6 @@ export async function createCheckoutSession(formData: FormData) {
       return { success: false, message: 'Service introuvable.' }
     }
 
-    // 2. Récupérer ou créer l'entreprise (business) par défaut
     let business = await db.business.findFirst()
 
     if (!business) {
@@ -47,7 +44,6 @@ export async function createCheckoutSession(formData: FormData) {
       })
     }
 
-    // 3. Trouver ou créer le client (CRM)
     let client = await db.client.findUnique({
       where: { email: clientEmail },
     })
@@ -61,7 +57,6 @@ export async function createCheckoutSession(formData: FormData) {
       })
     }
 
-    // 4. Créer la réservation en statut PENDING et isPaid à false avec le businessId
     const newBooking = await db.booking.create({
       data: {
         serviceId,
@@ -75,13 +70,11 @@ export async function createCheckoutSession(formData: FormData) {
       },
     })
 
-    // 5. Sécuriser le montant pour Stripe (convertit en centimes et vérifie la validité)
     const unitAmount = Math.round(Number(service.price) * 100)
     if (isNaN(unitAmount) || unitAmount <= 0) {
       return { success: false, message: 'Le prix du service est invalide.' }
     }
 
-    // 6. Créer la session de paiement Stripe Checkout
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       line_items: [
@@ -99,8 +92,8 @@ export async function createCheckoutSession(formData: FormData) {
       ],
       mode: 'payment',
       customer_email: clientEmail,
-      success_url: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/book/success?booking_id=${newBooking.id}`,
-      cancel_url: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/book?canceled=true`,
+      success_url: `${process.env.NEXT_PUBLIC_APP_URL}/book/success?booking_id=${newBooking.id}`,
+      cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/book?canceled=true`,
       metadata: {
         bookingId: newBooking.id,
       },
@@ -110,16 +103,19 @@ export async function createCheckoutSession(formData: FormData) {
       return { success: false, message: 'Erreur lors de la création de la session de paiement.' }
     }
 
-    // 7. Redirection vers la page de paiement sécurisée Stripe
     redirect(session.url)
 
-    } catch (error: any) {
+  } catch (error: any) {
     if (error?.message === 'NEXT_REDIRECT') {
       throw error
     }
-    // Affiche l'erreur détaillée de Stripe dans les logs Render
-    console.error('Erreur Stripe détaillée :', error?.raw || error.message || error)
+    // Affichage explicite du message d'erreur Stripe dans les logs
+    console.error('--- ERREUR STRIPE EXPLICITE ---')
+    console.error('Message :', error?.raw?.message || error?.message)
+    console.error('Type :', error?.raw?.type)
+    console.error('Code :', error?.raw?.code)
+    console.error('-------------------------------')
+    
     return { success: false, message: 'Impossible d\'initier le paiement.' }
   }
-
 }
